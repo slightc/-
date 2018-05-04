@@ -35,8 +35,8 @@ def SetFoot(x,yl,yr,zl,zr):
 
     time.sleep(delay_time)
 
-dir = -1
-yllast = 0
+# dir = -1
+# yllast = 0
 
 def SetFootY(val,step,h):
     dir = 0
@@ -60,8 +60,8 @@ def SetFootY(val,step,h):
     return round(wave),-round(wave),setzl,setzr
 
 
-for i in range(320):
-    setyl,seryr,setzl,setzr = SetFootY(i*1,20,10)
-    SetFoot(setyl,setyl,seryr,setzl,setzr)
+# for i in range(320):
+#     setyl,seryr,setzl,setzr = SetFootY(i*1,20,10)
+#     SetFoot(setyl,setyl,seryr,setzl,setzr)
 
-SetFoot(0,0,0,0,0)
+# SetFoot(0,0,0,0,0)

@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "*.ino": "c",
+        "xutility": "cpp",
+        "xlocale": "cpp",
+        "iosfwd": "cpp",
+        "ios": "cpp",
+        "xiosbase": "cpp",
+        "*hxlocale": "cpp",
+        "string": "cpp",
+        "iostream": "cpp",
+        "winbase.h": "c",
+        "d3d9types.h": "c",
+        "icm.h": "c",
+        "ras.h": "c",
+        "usp10.h": "c",
+        "polar.cpp": "c",
+        "stdio.h": "c",
+        "string.h": "c"
+    }
+}

@@ -18,7 +18,7 @@ Angle_dir = [1, 1, 1, 1, 1, 1, 1, \
 # 91, 91, 53, 91, 90, \
 # 17, 18, 19, 20]
 
-ser = serial.Serial("COM19",115200,timeout=100)
+ser = serial.Serial("COM4",115200,timeout=100)
 
 
 def serial_flush():

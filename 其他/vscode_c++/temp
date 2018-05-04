@@ -1,0 +1,3 @@
+    a=sqrt((line.end.y-line.start.y)*(line.end.y-line.start.y)+(line.end.x-line.start.x)*(line.end.x-line.start.x));
+    b=sqrt((point.y-line.start.y)*(point.y-line.start.y)+(point.x-line.start.x)*(point.x-line.start.x));
+    c=sqrt((point.y-line.end.y)*(point.y-line.end.y)+(point.x-line.end.x)*(point.x-line.end.x));

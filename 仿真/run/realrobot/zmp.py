@@ -117,7 +117,10 @@ for i in range(len(x)):
         zl = 0
         zr = 0
 
-    foot.SetFootX(d,zl,zr)
+    # foot.SetFootX(d,zl,zr)
+    
+    # setyl,seryr,setzl,setzr = foot.SetFootY(i*1,20,10)
+    foot.SetFoot(d,0,0,0,0)
     # a = (d - zmp)*0.004 + (zmpdis - zmp)*0.003 - v*0.08 + errdif*0.005
     # u = errsum * -0.005 + errdif * 0.0 + err * -0.01 + \
     #     d * -0.01 + v * 0.0 + a * -0.0 + \
