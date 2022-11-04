@@ -70,10 +70,8 @@ for i in range(len(x)):
     zmpcal()
     zmpnum.append(zmp)
     dnum.append(d)
-    zmpdis = 0
+    zmpdis = sum(y[i+m-8]*(1-cos(m/40*2*pi))*(1/19) for m in range(20))
 
-    for m in range(20):
-        zmpdis += y[i+m-8]*(1-cos(m/40*2*pi))*(1/19)
     # zmpdis = y[i]
     zmpdis1 = zmpdis
     zmpdis2 = zmpdis1
@@ -103,7 +101,7 @@ for i in range(len(x)):
     a = err * 25 + errsum * 0.0 + errdif * -0.0 + \
         v * -5
 
-    
+
     if ( x[i]>0 and x[i]<=2 ):
         zl = 0
         zr = 0
@@ -118,7 +116,7 @@ for i in range(len(x)):
         zr = 0
 
     # foot.SetFootX(d,zl,zr)
-    
+
     # setyl,seryr,setzl,setzr = foot.SetFootY(i*1,20,10)
     foot.SetFoot(d,0,0,0,0)
     # a = (d - zmp)*0.004 + (zmpdis - zmp)*0.003 - v*0.08 + errdif*0.005
@@ -131,7 +129,7 @@ for i in range(len(x)):
 ###########################################
 plt.figure(1)
 
-plt.plot(x, y[0:int(10/0.04)])
+plt.plot(x, y[:int(10/0.04)])
 plt.plot(x, zmpnum)
 plt.plot(x, dnum)
 # plt.plot(x, zmpdisnum)

@@ -17,11 +17,8 @@ y = []
 for i in x:
     if i < 2:
         y.append(0)
-    elif i > 3:
-        y.append(30)
     else:
         y.append(30)
-
 y += [50] * 500
 y += [0] * 100
 
@@ -67,10 +64,8 @@ for i in range(len(x)):
     zmpcal()
     zmpnum.append(zmp)
     dnum.append(d)
-    zmpdis = 0
+    zmpdis = sum(y[i+m-8]*(1-cos(m/40*2*pi))*(1/19) for m in range(20))
 
-    for m in range(20):
-        zmpdis += y[i+m-8]*(1-cos(m/40*2*pi))*(1/19)
     # zmpdis = y[i]
     zmpdis1 = zmpdis
     zmpdis2 = zmpdis1
@@ -110,7 +105,7 @@ for i in range(len(x)):
 ###########################################
 plt.figure(1)
 
-plt.plot(x, y[0:int(10/0.04)])
+plt.plot(x, y[:int(10/0.04)])
 plt.plot(x, zmpnum)
 plt.plot(x, dnum)
 # plt.plot(x, zmpdisnum)

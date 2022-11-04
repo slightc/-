@@ -33,11 +33,10 @@ def GetBezierPoint(pathpoints):
 
 def BezierCal(p0, p1, p2, t):
     leng = len(p0)
-    val = []
-    for i in range(leng):
-        val.append(p0[i] * (1 - t) * (1 - t) + p1[i]
-                   * 2 * t * (1 - t) + p2[i] * t * t)
-    return val
+    return [
+        p0[i] * (1 - t) * (1 - t) + p1[i] * 2 * t * (1 - t) + p2[i] * t * t
+        for i in range(leng)
+    ]
 
 
 def BezierCalAll(bezierpoint, t):
@@ -47,9 +46,9 @@ def BezierCalAll(bezierpoint, t):
     n = int(t_real)
     t_real = t_real - n
 
-    val = BezierCal(bezierpoint[n][0], bezierpoint[n]
-                    [1], bezierpoint[n][2], t_real)
-    return val
+    return BezierCal(
+        bezierpoint[n][0], bezierpoint[n][1], bezierpoint[n][2], t_real
+    )
 
 
 BezierPoint = GetBezierPoint(PathKeyPoint)

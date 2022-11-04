@@ -21,9 +21,7 @@ def serial_read(lengh):
 
 def check_val(data):
     data_len = len(data)
-    sum_val = 0
-    for i in range(2, data_len-1):
-        sum_val += data[i]
+    sum_val = sum(data[i] for i in range(2, data_len-1))
     sum_val = 255 - sum_val % 256
     data[data_len-1] = sum_val
     return sum_val
@@ -276,8 +274,7 @@ def test():
 def ReadPos(scs_id=0xfe):
     read_d_reg(scs_id, 0x38)
     serial_flush()
-    a = serial_read(8)
-    if a:
+    if a := serial_read(8):
         if(a[0] == 0xff) & (a[1] == 0xf5):
             return(a[5] << 8) + a[6]
     return - 1

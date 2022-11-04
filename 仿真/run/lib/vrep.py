@@ -184,9 +184,7 @@ def simxGetJointMatrix(clientID, jointHandle, operationMode):
     '''
     matrix = (ct.c_float*12)()
     ret = c_GetJointMatrix(clientID, jointHandle, matrix, operationMode)
-    arr = []
-    for i in range(12):
-        arr.append(matrix[i])
+    arr = [matrix[i] for i in range(12)]
     return ret, arr
 
 def simxSetSphericalJointMatrix(clientID, jointHandle, matrix, operationMode):
@@ -238,12 +236,8 @@ def simxReadForceSensor(clientID, forceSensorHandle, operationMode):
     forceVector  = (ct.c_float*3)()
     torqueVector = (ct.c_float*3)()
     ret = c_ReadForceSensor(clientID, forceSensorHandle, ct.byref(state), forceVector, torqueVector, operationMode)
-    arr1 = []
-    for i in range(3):
-        arr1.append(forceVector[i])
-    arr2 = []
-    for i in range(3):
-        arr2.append(torqueVector[i])
+    arr1 = [forceVector[i] for i in range(3)]
+    arr2 = [torqueVector[i] for i in range(3)]
     #if sys.version_info[0] == 3:
     #    state=state.value
     #else:
@@ -265,7 +259,7 @@ def simxReadVisionSensor(clientID, sensorHandle, operationMode):
     auxValues      = ct.POINTER(ct.c_float)()
     auxValuesCount = ct.POINTER(ct.c_int)()
     ret = c_ReadVisionSensor(clientID, sensorHandle, ct.byref(detectionState), ct.byref(auxValues), ct.byref(auxValuesCount), operationMode)
-    
+
     auxValues2 = []
     if ret == 0:
         s = 0
@@ -277,7 +271,7 @@ def simxReadVisionSensor(clientID, sensorHandle, operationMode):
         c_ReleaseBuffer(auxValues)
         c_ReleaseBuffer(auxValuesCount)
 
-    return ret, bool(detectionState.value!=0), auxValues2 
+    return ret, detectionState.value != 0, auxValues2 
 
 def simxGetObjectHandle(clientID, objectName, operationMode):
     '''
@@ -295,9 +289,7 @@ def simxGetVisionSensorImage(clientID, sensorHandle, options, operationMode):
 
     resolution = (ct.c_int*2)()
     c_image  = ct.POINTER(ct.c_byte)()
-    bytesPerPixel = 3
-    if (options and 1) != 0:
-        bytesPerPixel = 1
+    bytesPerPixel = 1 if (options and 1) != 0 else 3
     ret = c_GetVisionSensorImage(clientID, sensorHandle, resolution, ct.byref(c_image), options, operationMode)
 
     reso = []
@@ -306,8 +298,7 @@ def simxGetVisionSensorImage(clientID, sensorHandle, options, operationMode):
         image = [None]*resolution[0]*resolution[1]*bytesPerPixel
         for i in range(resolution[0] * resolution[1] * bytesPerPixel):
             image[i] = c_image[i]
-        for i in range(2):
-            reso.append(resolution[i])
+        reso.extend(resolution[i] for i in range(2))
     return ret, reso, image
 
 def simxSetVisionSensorImage(clientID, sensorHandle, image, options, operationMode):
@@ -331,8 +322,7 @@ def simxGetVisionSensorDepthBuffer(clientID, sensorHandle, operationMode):
         buffer = [None]*resolution[0]*resolution[1]
         for i in range(resolution[0] * resolution[1]):
             buffer[i] = c_buffer[i]
-        for i in range(2):
-            reso.append(resolution[i])
+        reso.extend(resolution[i] for i in range(2))
     return ret, reso, buffer
 
 def simxGetObjectChild(clientID, parentObjectHandle, childIndex, operationMode):
@@ -360,13 +350,9 @@ def simxReadProximitySensor(clientID, sensorHandle, operationMode):
     detectedPoint  = (ct.c_float*3)()
     detectedSurfaceNormalVector = (ct.c_float*3)()
     ret = c_ReadProximitySensor(clientID, sensorHandle, ct.byref(detectionState), detectedPoint, ct.byref(detectedObjectHandle), detectedSurfaceNormalVector, operationMode)
-    arr1 = []
-    for i in range(3):
-        arr1.append(detectedPoint[i])
-    arr2 = []
-    for i in range(3):
-        arr2.append(detectedSurfaceNormalVector[i])
-    return ret, bool(detectionState.value!=0), arr1, detectedObjectHandle.value, arr2
+    arr1 = [detectedPoint[i] for i in range(3)]
+    arr2 = [detectedSurfaceNormalVector[i] for i in range(3)]
+    return ret, detectionState.value != 0, arr1, detectedObjectHandle.value, arr2
 
 def simxLoadModel(clientID, modelPathAndName, options, operationMode):
     '''
@@ -387,11 +373,10 @@ def simxLoadUI(clientID, uiPathAndName, options, operationMode):
     if (sys.version_info[0] == 3) and (type(uiPathAndName) is str):
         uiPathAndName=uiPathAndName.encode('utf-8')
     ret = c_LoadUI(clientID, uiPathAndName, options, ct.byref(count), ct.byref(uiHandles), operationMode)
-    
+
     handles = []
     if ret == 0:
-        for i in range(count.value):
-            handles.append(uiHandles[i])
+        handles.extend(uiHandles[i] for i in range(count.value))
         #free C buffers
         c_ReleaseBuffer(uiHandles)
 
@@ -460,9 +445,7 @@ def simxGetUIEventButton(clientID, uiHandle, operationMode):
     uiEventButtonID = ct.c_int()
     auxValues = (ct.c_int*2)()
     ret = c_GetUIEventButton(clientID, uiHandle, ct.byref(uiEventButtonID), auxValues, operationMode)
-    arr = []
-    for i in range(2):
-        arr.append(auxValues[i])
+    arr = [auxValues[i] for i in range(2)]
     return ret, uiEventButtonID.value, arr
 
 def simxGetUIButtonProperty(clientID, uiHandle, uiButtonID, operationMode):
@@ -497,18 +480,9 @@ def simxAuxiliaryConsoleOpen(clientID, title, maxLines, mode, position, size, te
     consoleHandle = ct.c_int()
     if (sys.version_info[0] == 3) and (type(title) is str):
         title=title.encode('utf-8')
-    if position != None:
-        c_position = (ct.c_int*2)(*position)
-    else:
-        c_position = None
-    if size != None:
-        c_size = (ct.c_int*2)(*size)
-    else:
-        c_size = None
-    if textColor != None:
-        c_textColor = (ct.c_float*3)(*textColor)
-    else:
-        c_textColor = None
+    c_position = (ct.c_int*2)(*position) if position != None else None
+    c_size = (ct.c_int*2)(*size) if size != None else None
+    c_textColor = (ct.c_float*3)(*textColor) if textColor != None else None
     if backgroundColor != None:
         c_backgroundColor = (ct.c_float*3)(*backgroundColor)
     else:
@@ -544,9 +518,7 @@ def simxGetObjectOrientation(clientID, objectHandle, relativeToObjectHandle, ope
     '''
     eulerAngles = (ct.c_float*3)()
     ret = c_GetObjectOrientation(clientID, objectHandle, relativeToObjectHandle, eulerAngles, operationMode)
-    arr = []
-    for i in range(3):
-        arr.append(eulerAngles[i])
+    arr = [eulerAngles[i] for i in range(3)]
     return ret, arr
 
 def simxGetObjectPosition(clientID, objectHandle, relativeToObjectHandle, operationMode):
@@ -555,9 +527,7 @@ def simxGetObjectPosition(clientID, objectHandle, relativeToObjectHandle, operat
     '''
     position = (ct.c_float*3)()
     ret = c_GetObjectPosition(clientID, objectHandle, relativeToObjectHandle, position, operationMode)
-    arr = []
-    for i in range(3):
-        arr.append(position[i])
+    arr = [position[i] for i in range(3)]
     return ret, arr
 
 def simxSetObjectOrientation(clientID, objectHandle, relativeToObjectHandle, eulerAngles, operationMode):
@@ -604,8 +574,7 @@ def simxGetLastErrors(clientID, operationMode):
     errorStrings = ct.POINTER(ct.c_char)()
     ret = c_GetLastErrors(clientID, ct.byref(errorCnt), ct.byref(errorStrings), operationMode)
     if ret == 0:
-        s = 0
-        for i in range(errorCnt.value):
+        for s, _ in enumerate(range(errorCnt.value)):
             a = bytearray()
             while errorStrings[s] != b'\0':
                 if sys.version_info[0] == 3:
@@ -613,7 +582,6 @@ def simxGetLastErrors(clientID, operationMode):
                 else:
                     a.append(errorStrings[s])
                 s += 1
-            s += 1 #skip null
             if sys.version_info[0] == 3:
                 errors.append(str(a,'utf-8'))
             else:
@@ -627,9 +595,7 @@ def simxGetArrayParameter(clientID, paramIdentifier, operationMode):
     '''
     paramValues = (ct.c_float*3)()
     ret = c_GetArrayParameter(clientID, paramIdentifier, paramValues, operationMode)
-    arr = []
-    for i in range(3):
-        arr.append(paramValues[i])
+    arr = [paramValues[i] for i in range(3)]
     return ret, arr
 
 def simxSetArrayParameter(clientID, paramIdentifier, paramValues, operationMode):
@@ -646,7 +612,12 @@ def simxGetBooleanParameter(clientID, paramIdentifier, operationMode):
     '''
 
     paramValue = ct.c_ubyte()
-    return c_GetBooleanParameter(clientID, paramIdentifier, ct.byref(paramValue), operationMode), bool(paramValue.value!=0)
+    return (
+        c_GetBooleanParameter(
+            clientID, paramIdentifier, ct.byref(paramValue), operationMode
+        ),
+        paramValue.value != 0,
+    )
 
 def simxSetBooleanParameter(clientID, paramIdentifier, paramValue, operationMode):
     '''
@@ -691,7 +662,7 @@ def simxGetStringParameter(clientID, paramIdentifier, operationMode):
     '''
     paramValue = ct.POINTER(ct.c_char)()
     ret = c_GetStringParameter(clientID, paramIdentifier, ct.byref(paramValue), operationMode)
-    
+
     a = bytearray()
     if ret == 0:
         i = 0
@@ -700,11 +671,8 @@ def simxGetStringParameter(clientID, paramIdentifier, operationMode):
                 a.append(int.from_bytes(paramValue[i],'big'))
             else:
                 a.append(paramValue[i])
-            i=i+1
-    if sys.version_info[0] == 3:
-        a=str(a,'utf-8')
-    else:
-        a=str(a)
+            i += 1
+    a = str(a,'utf-8') if sys.version_info[0] == 3 else str(a)
     return ret, a
 
 def simxGetCollisionHandle(clientID, collisionObjectName, operationMode):
@@ -742,7 +710,15 @@ def simxReadCollision(clientID, collisionObjectHandle, operationMode):
     Please have a look at the function description/documentation in the V-REP user manual
     '''
     collisionState = ct.c_ubyte()
-    return c_ReadCollision(clientID, collisionObjectHandle, ct.byref(collisionState), operationMode), bool(collisionState.value!=0)
+    return (
+        c_ReadCollision(
+            clientID,
+            collisionObjectHandle,
+            ct.byref(collisionState),
+            operationMode,
+        ),
+        collisionState.value != 0,
+    )
 
 def simxReadDistance(clientID, distanceObjectHandle, operationMode):
     '''
@@ -791,9 +767,7 @@ def simxGetObjects(clientID, objectType, operationMode):
     ret = c_GetObjects(clientID, objectType, ct.byref(objectCount), ct.byref(objectHandles), operationMode)
     handles = []
     if ret == 0:
-        for i in range(objectCount.value):
-            handles.append(objectHandles[i])
-
+        handles.extend(objectHandles[i] for i in range(objectCount.value))
     return ret, handles
 
 
@@ -801,10 +775,7 @@ def simxDisplayDialog(clientID, titleText, mainText, dialogType, initialText, ti
     '''
     Please have a look at the function description/documentation in the V-REP user manual
     '''
-    if titleColors != None:
-        c_titleColors  = (ct.c_float*6)(*titleColors)
-    else:
-        c_titleColors  = None
+    c_titleColors = (ct.c_float*6)(*titleColors) if titleColors != None else None
     if dialogColors != None:
         c_dialogColors  = (ct.c_float*6)(*dialogColors)
     else:
@@ -834,7 +805,7 @@ def simxGetDialogInput(clientID, dialogHandle, operationMode):
     '''
     inputText = ct.POINTER(ct.c_char)()
     ret = c_GetDialogInput(clientID, dialogHandle, ct.byref(inputText), operationMode)
-    
+
     a = bytearray()
     if ret == 0:
         i = 0
@@ -843,12 +814,9 @@ def simxGetDialogInput(clientID, dialogHandle, operationMode):
                 a.append(int.from_bytes(inputText[i],'big'))
             else:
                 a.append(inputText[i])
-            i = i+1
+            i += 1
 
-    if sys.version_info[0] == 3:
-        a=str(a,'utf-8')
-    else:
-        a=str(a)
+    a = str(a,'utf-8') if sys.version_info[0] == 3 else str(a)
     return ret, a
 
 
@@ -871,9 +839,7 @@ def simxCopyPasteObjects(clientID, objectHandles, operationMode):
 
     newobj = []
     if ret == 0:
-        for i in range(newObjectCount.value):
-            newobj.append(newObjectHandles[i])
-
+        newobj.extend(newObjectHandles[i] for i in range(newObjectCount.value))
     return ret, newobj
 
 
@@ -887,9 +853,7 @@ def simxGetObjectSelection(clientID, operationMode):
 
     newobj = []
     if ret == 0:
-        for i in range(objectCount.value):
-            newobj.append(objectHandles[i])
-
+        newobj.extend(objectHandles[i] for i in range(objectCount.value))
     return ret, newobj
 
 
@@ -1250,10 +1214,7 @@ def simxCreateDummy(clientID, size, color, operationMode):
     '''
 
     handle = ct.c_int()
-    if color != None:
-        c_color = (ct.c_ubyte*12)(*color)
-    else:
-        c_color = None
+    c_color = (ct.c_ubyte*12)(*color) if color != None else None
     return c_CreateDummy(clientID, size, c_color, ct.byref(handle), operationMode), handle.value
 
 def simxQuery(clientID, signalName, signalValue, retSignalName, timeOutInMs):
@@ -1312,16 +1273,12 @@ def simxGetObjectGroupData(clientID, objectType, dataType, operationMode):
     stringDataC = ct.c_int()
     stringDataP = ct.POINTER(ct.c_char)()
     ret = c_GetObjectGroupData(clientID, objectType, dataType, ct.byref(handlesC), ct.byref(handlesP), ct.byref(intDataC), ct.byref(intDataP), ct.byref(floatDataC), ct.byref(floatDataP), ct.byref(stringDataC), ct.byref(stringDataP), operationMode)
-    
+
     if ret == 0:
-        for i in range(handlesC.value):
-            handles.append(handlesP[i])
-        for i in range(intDataC.value):
-            intData.append(intDataP[i])
-        for i in range(floatDataC.value):
-            floatData.append(floatDataP[i])
-        s = 0
-        for i in range(stringDataC.value):
+        handles.extend(handlesP[i] for i in range(handlesC.value))
+        intData.extend(intDataP[i] for i in range(intDataC.value))
+        floatData.extend(floatDataP[i] for i in range(floatDataC.value))
+        for s, _ in enumerate(range(stringDataC.value)):
             a = bytearray()
             while stringDataP[s] != b'\0':
                 if sys.version_info[0] == 3:
@@ -1329,13 +1286,9 @@ def simxGetObjectGroupData(clientID, objectType, dataType, operationMode):
                 else:
                     a.append(stringDataP[s])
                 s += 1
-            s += 1 #skip null
-            if sys.version_info[0] == 3:
-                a=str(a,'utf-8')
-            else:
-                a=str(a)
+            a = str(a,'utf-8') if sys.version_info[0] == 3 else str(a)
             stringData.append(a)
- 
+
     return ret, handles, intData, floatData, stringData
 
 def simxCallScriptFunction(clientID, scriptDescription, options, functionName, inputInts, inputFloats, inputStrings, inputBuffer, operationMode):
@@ -1393,12 +1346,9 @@ def simxCallScriptFunction(clientID, scriptDescription, options, functionName, i
     ret = c_CallScriptFunction(clientID,scriptDescription,options,functionName,len(inputInts),c_inInts,len(inputFloats),c_inFloats,len(inputStrings),c_inStrings,len(inputBuffer),inputBufferV,ct.byref(intDataC),ct.byref(intDataP),ct.byref(floatDataC),ct.byref(floatDataP),ct.byref(stringDataC),ct.byref(stringDataP),ct.byref(bufferS),ct.byref(bufferP),operationMode)
 
     if ret == 0:
-        for i in range(intDataC.value):
-            intDataOut.append(intDataP[i])
-        for i in range(floatDataC.value):
-            floatDataOut.append(floatDataP[i])
-        s = 0
-        for i in range(stringDataC.value):
+        intDataOut.extend(intDataP[i] for i in range(intDataC.value))
+        floatDataOut.extend(floatDataP[i] for i in range(floatDataC.value))
+        for s, _ in enumerate(range(stringDataC.value)):
             a = bytearray()
             while stringDataP[s] != b'\0':
                 if sys.version_info[0] == 3:
@@ -1406,11 +1356,7 @@ def simxCallScriptFunction(clientID, scriptDescription, options, functionName, i
                 else:
                     a.append(stringDataP[s])
                 s += 1
-            s += 1 #skip null
-            if sys.version_info[0] == 3:
-                a=str(a,'utf-8')
-            else:
-                a=str(a)
+            a = str(a,'utf-8') if sys.version_info[0] == 3 else str(a)
             stringDataOut.append(a)
         for i in range(bufferS.value):
             bufferOut.append(bufferP[i])
@@ -1426,12 +1372,8 @@ def simxGetObjectVelocity(clientID, objectHandle, operationMode):
     linearVel  = (ct.c_float*3)()
     angularVel = (ct.c_float*3)()
     ret = c_GetObjectVelocity(clientID, objectHandle, linearVel, angularVel, operationMode)
-    arr1 = []
-    for i in range(3):
-        arr1.append(linearVel[i])
-    arr2 = []
-    for i in range(3):
-        arr2.append(angularVel[i])
+    arr1 = [linearVel[i] for i in range(3)]
+    arr2 = [angularVel[i] for i in range(3)]
     return ret, arr1, arr2 
 
 def simxPackInts(intList):
@@ -1445,19 +1387,17 @@ def simxPackInts(intList):
             s=s+struct.pack('<i',intList[i])
         s=bytearray(s)
     else:
-        s=''
-        for i in range(len(intList)):
-            s+=struct.pack('<i',intList[i])
+        s = ''.join(struct.pack('<i',intList[i]) for i in range(len(intList)))
     return s
 
 def simxUnpackInts(intsPackedInString):
     '''
     Please have a look at the function description/documentation in the V-REP user manual
     '''
-    b=[]
-    for i in range(int(len(intsPackedInString)/4)):
-        b.append(struct.unpack('<i',intsPackedInString[4*i:4*(i+1)])[0])
-    return b
+    return [
+        struct.unpack('<i', intsPackedInString[4 * i : 4 * (i + 1)])[0]
+        for i in range(len(intsPackedInString) // 4)
+    ]
 
 def simxPackFloats(floatList):
     '''
@@ -1470,16 +1410,14 @@ def simxPackFloats(floatList):
             s=s+struct.pack('<f',floatList[i])
         s=bytearray(s)
     else:
-        s=''
-        for i in range(len(floatList)):
-            s+=struct.pack('<f',floatList[i])
+        s = ''.join(struct.pack('<f',floatList[i]) for i in range(len(floatList)))
     return s
 
 def simxUnpackFloats(floatsPackedInString):
     '''
     Please have a look at the function description/documentation in the V-REP user manual
     '''
-    b=[]
-    for i in range(int(len(floatsPackedInString)/4)):
-        b.append(struct.unpack('<f',floatsPackedInString[4*i:4*(i+1)])[0])
-    return b
+    return [
+        struct.unpack('<f', floatsPackedInString[4 * i : 4 * (i + 1)])[0]
+        for i in range(len(floatsPackedInString) // 4)
+    ]

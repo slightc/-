@@ -55,6 +55,12 @@ zmpdis = 0
 zmpdis1 = 0
 zmpdis2 = 0
 zmpdisnum = []
+start_val = 0
+max_val = 0.0005
+end_val = 0
+c_time = 50
+e_time = 100
+
 ###########################################
 for i in range(len(x)):
     # if i == 400:
@@ -67,10 +73,7 @@ for i in range(len(x)):
     zmpcal()
     zmpnum.append(zmp)
     dnum.append(d)
-    zmpdis = 0
-
-    for m in range(40):
-        zmpdis += y[i+m-5]*(1-cos(m/40*2*pi))*0.025
+    zmpdis = sum(y[i+m-5]*(1-cos(m/40*2*pi))*0.025 for m in range(40))
 
     zmpdis1 = zmpdis
     zmpdis2 = zmpdis1
@@ -82,17 +85,8 @@ for i in range(len(x)):
     errdif = err-errlast
     errlast = err
 
-    prew = 0
-    start_val = 0
-    max_val = 0.0005
-    end_val = 0
-    c_time = 50
-    e_time = 100
-
     gp = np.linspace(start_val, max_val, c_time)
-    for j in range(c_time):
-        prew += gp[j] * y[i + j]
-
+    prew = sum(gp[j] * y[i + j] for j in range(c_time))
     gp = np.linspace(max_val, end_val, e_time-c_time)
     for j in range(e_time-c_time):
         prew += gp[j]*y[i+c_time+j]
@@ -110,7 +104,7 @@ for i in range(len(x)):
 ###########################################
 plt.figure(1)
 
-plt.plot(x, y[0:1000])
+plt.plot(x, y[:1000])
 plt.plot(x, zmpnum)
 plt.plot(x, dnum)
 # plt.plot(x, zmpdisnum)

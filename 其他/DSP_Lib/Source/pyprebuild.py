@@ -11,7 +11,7 @@ def getdir(path, direxp=[]):
     for i in direxp:
         dirlist[1].remove(i)
 
-    for i in range(0, len(dirlist[1])):
+    for i in range(len(dirlist[1])):
         dirlist[1][i] = path + dirlist[1][i]
 
     return dirlist[1]
@@ -38,7 +38,7 @@ def getfile(path, fileexp=[]):
     for i in fileexp:
         filelist[2].remove(i)
 
-    for i in range(0, len(filelist[2])):
+    for i in range(len(filelist[2])):
         filelist[2][i] = path + filelist[2][i]
 
     return filelist[2]
@@ -46,7 +46,7 @@ def getfile(path, fileexp=[]):
 
 fileexp1 = ["arm_bitreversal2.S"]
 ismake = True
-if ismake == True:
+if ismake:
     dirlist = getdir("./", direxp)
     for i in dirlist:
         if i == "./TransformFunctions":

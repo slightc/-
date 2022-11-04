@@ -40,18 +40,15 @@ def SetFoot():
 sety = 0
 dir = 0
 
-for i in range(400):
-
+for _ in range(400):
     setLeft[0] = setRight[0] = 0 #40*math.sin(i*2*math.pi/100)
-    
-    
+
+
     timestart = time.time()
     SetFoot()
     use_time = (time.time()-timestart)
     print(use_time)
     delay_time = 0.04 - use_time
 
-    if delay_time < 0.01:
-        delay_time = 0.01
-
+    delay_time = max(delay_time, 0.01)
     time.sleep(delay_time)
