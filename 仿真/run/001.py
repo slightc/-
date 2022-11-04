@@ -54,10 +54,7 @@ def ReadForceSensor(handle, mode=1):
 
 
 def ReadFsrGroup(FsrGroup, mode=1):
-    data = []
-    for i in FsrGroup:
-        data.append(ReadForceSensor(i, mode))
-    return data
+    return [ReadForceSensor(i, mode) for i in FsrGroup]
 
 
 Connect()
@@ -122,9 +119,9 @@ Position2 = [0, 0, 0]
 
 
 a = ReadFsrGroup(FsrGroup, 3)
-print(a, sum(a[0:4]), sum(a[4:8]), sum(a))
+print(a, sum(a[:4]), sum(a[4:8]), sum(a))
 
-for i in range(1, 10):
+for _ in range(1, 10):
     Position1[1] += 0.003
     SetTargetLPos(Position1)
     Position2[1] += 0.0003
@@ -132,7 +129,7 @@ for i in range(1, 10):
     time.sleep(0.005)
 
 a = ReadFsrGroup(FsrGroup, 3)
-print(a, sum(a[0:4]), sum(a[4:8]), sum(a))
+print(a, sum(a[:4]), sum(a[4:8]), sum(a))
 
 step = 0.0002
 wight = 0.0003
@@ -162,7 +159,7 @@ for i in range(10):
     time.sleep(0.1)
 
 a = ReadFsrGroup(FsrGroup, 3)
-print(a, sum(a[0:4]), sum(a[4:8]), sum(a))
+print(a, sum(a[:4]), sum(a[4:8]), sum(a))
 
 time.sleep(2)
 

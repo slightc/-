@@ -31,15 +31,15 @@ code,tiphandle = vrep.simxGetObjectHandle(clientID,"Dummy_tip",vrep.simx_opmode_
 
 joint_hanldes = [0,0,0,0,0]
 for i in range(5):
-    code,joint_hanldes[i] = vrep.simxGetObjectHandle(clientID,"Revolute_joint"+str(i),vrep.simx_opmode_blocking)
+    code, joint_hanldes[i] = vrep.simxGetObjectHandle(
+        clientID, f"Revolute_joint{str(i)}", vrep.simx_opmode_blocking
+    )
 ####################################
 
 def SetTargetPos(set_pos):
     global zeroPoint,clientID,targethandle
     # code,pos = vrep.simxGetObjectPosition(clientID,targethandle,-1,vrep.simx_opmode_blocking)
-    pos = []
-    for i in range(len(zeroPoint)):
-        pos.append(zeroPoint[i]+set_pos[i]/1000.0)
+    pos = [zeroPoint[i]+set_pos[i]/1000.0 for i in range(len(zeroPoint))]
     vrep.simxSetObjectPosition(clientID,targethandle,-1,pos,vrep.simx_opmode_oneshot_wait)
 
 def ReadJointPosStart():
@@ -72,16 +72,11 @@ def ReadTipAngle():
 
 def WaitArrivalPos(pos):
     wait = True
-    while wait == True:
-        wait = False
-
+    while wait:
         pos_now = ReadTipPos()
         angle_now = ReadTipAngle()
-     
-        for i in range(len(pos)):
-            if (pos[i] - pos_now[i]*1000)>1:
-                wait = True
-        
+
+        wait = any((pos[i] - pos_now[i]*1000)>1 for i in range(len(pos)))
         for i in range(len(angle_now)):
             if (angle_now[i])>1:
                 wait = True
@@ -95,35 +90,28 @@ def WaitArrivalPos(pos):
 # code,targethandle = vrep.simxGetObjectHandle(clientID,"Dummy_target",vrep.simx_opmode_blocking)
 # code,pos = vrep.simxGetObjectPosition(clientID,targethandle,-1,vrep.simx_opmode_blocking)
 
-SetTargetPos([0,0,0]) 
+SetTargetPos([0,0,0])
 ReadJointPosStart()
 time.sleep(0.5)
 
-filep = open("invdata.csv","w")
-
-for z in range(-20,21):
-    for x in range(-50,51):
-        for y in range(-60,61):
-            pos = [x,y,z]
-            SetTargetPos(pos)
-            WaitArrivalPos(pos)
-            joint_pos = ReadJointPos()
-
-
-            # print(pos,joint_pos)
-            writestr =  str(pos[0])+","+\
-                        str(pos[1])+","+\
-                        str(pos[2])+","+ \
-                        str(joint_pos[0])+","+\
-                        str(joint_pos[1])+","+\
-                        str(joint_pos[2])+","+\
-                        str(joint_pos[3])+","+\
-                        str(joint_pos[4])+",\n"
-            # print(writestr,end=" ")
-            filep.write(writestr)
+with open("invdata.csv","w") as filep:
+    for z in range(-20,21):
+        for x in range(-50,51):
+            for y in range(-60,61):
+                pos = [x,y,z]
+                SetTargetPos(pos)
+                WaitArrivalPos(pos)
+                joint_pos = ReadJointPos()
 
 
-filep.close()
+                            # print(pos,joint_pos)
+                writestr = (
+                    f"{str(pos[0])},{str(pos[1])},{str(pos[2])},{str(joint_pos[0])},{str(joint_pos[1])},{str(joint_pos[2])},{str(joint_pos[3])},{str(joint_pos[4])}"
+                    + ",\n"
+                )
+
+                # print(writestr,end=" ")
+                filep.write(writestr)
 
 
 

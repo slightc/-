@@ -12,7 +12,7 @@ def getdir(path, direxp=[]):
     for i in direxp:
         dirlist[1].remove(i)
 
-    for i in range(0, len(dirlist[1])):
+    for i in range(len(dirlist[1])):
         dirlist[1][i] = path + dirlist[1][i]
 
     return dirlist[1]
@@ -24,8 +24,7 @@ def buildfile(path, fileexp=[]):
     filelist = a.next()
     # gcc .\StatisticsFunctions\arm_max_f32.c -c -I $pwd -o .\build\$filename.o
     for i in filelist[2]:
-        command = "gcc " + path + "/" + i + \
-            " -c -I "+os.getcwd()+" -o ./build/" + i[: - 1] + "o"
+        command = f"gcc {path}/{i} -c -I {os.getcwd()} -o ./build/{i[:-1]}o"
         os.system(command)
         print (command)
 
@@ -36,7 +35,7 @@ def getfile(path, fileexp=[]):
     for i in fileexp:
         filelist[2].remove(i)
 
-    for i in range(0, len(filelist[2])):
+    for i in range(len(filelist[2])):
         filelist[2][i] = path + filelist[2][i]
 
     return filelist[2]
@@ -48,7 +47,7 @@ if filename != "":
     if filetype in("c", "cpp"):
 
         try:
-            os.remove("./"+filename+".exe")
+            os.remove(f"./{filename}.exe")
         except:
             print ("no have file")
 

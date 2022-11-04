@@ -14,10 +14,7 @@ def GetJointData(x,y,z):
     a = data[lineNum:lineNum+5] # binfp.read(5)
     b = [0]*5
     for i in range(5):
-        if a[i]>127:
-            b[i]=a[i]-256
-        else:
-            b[i]=a[i]
+        b[i] = a[i]-256 if a[i]>127 else a[i]
     return b
 
 def InserVal(a,b,maxval,val):
@@ -38,7 +35,7 @@ def GetJointAngle(x,y,z):
     x0 = int(x//5)
     y0 = int(y//5)
     z0 = int(z//5)
-    
+
     x0y0z0 = GetJointData(x0,y0,z0)
     x1y0z0 = GetJointData(x0+1,y0,z0)
     x0y1z0 = GetJointData(x0,y0+1,z0)

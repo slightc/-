@@ -31,42 +31,30 @@ def serial_read(lengh):
 
 def add_check(data):
     data_len = len(data)
-    sum_val = 0
-    for i in range(2, data_len-2):
-        sum_val += data[i]
+    sum_val = sum(data[i] for i in range(2, data_len-2))
     sum_val = sum_val % 256
     data[data_len-2] = sum_val
     return sum_val
 
 
 def check_is_macth(data):
-    if data:
-        if len(data) != 10:
-            return False
-        data_len = len(data)
-        sum_val = 0
-        for i in range(2, data_len-2):
-            sum_val += data[i]
-        return(data[data_len - 2] == (sum_val %256))
-    else:
+    if not data:
         return False
+    if len(data) != 10:
+        return False
+    data_len = len(data)
+    return data[data_len - 2] == sum(data[i] for i in range(2, data_len-2)) % 256
 
 
 def head_is_macth(data):
-    if data:
-        if len(data) != 10:
-            return False
-        return ((data[0] == 0xfa) and (data[1] == 0xaf))
-    else:
+    if not data:
         return False
+    return False if len(data) != 10 else ((data[0] == 0xfa) and (data[1] == 0xaf))
 
 def id_is_macth(data, servo_id):
-    if data:
-        if len(data) != 10:
-            return False
-        return(data[2] == servo_id)
-    else:
+    if not data:
         return False
+    return False if len(data) != 10 else (data[2] == servo_id)
 
 
 def ReadID():
@@ -89,10 +77,13 @@ def SetID(servo_id, new_id):
     add_check(val)
     serial_write(val)
     rev = serial_read(10)
-    if (head_is_macth(rev) and check_is_macth(rev) and id_is_macth(rev, servo_id)):
-        return True
-    else:
-        return False
+    return bool(
+        (
+            head_is_macth(rev)
+            and check_is_macth(rev)
+            and id_is_macth(rev, servo_id)
+        )
+    )
 
 
 def SetOffset(servo_id, offset):
@@ -102,10 +93,13 @@ def SetOffset(servo_id, offset):
     add_check(val)
     serial_write(val)
     rev = serial_read(10)
-    if (head_is_macth(rev) and check_is_macth(rev) and id_is_macth(rev, servo_id)):
-        return True
-    else:
-        return False
+    return bool(
+        (
+            head_is_macth(rev)
+            and check_is_macth(rev)
+            and id_is_macth(rev, servo_id)
+        )
+    )
 
 
 def SetPos(servo_id, pos, time, n1=0, n2=1):
@@ -115,10 +109,7 @@ def SetPos(servo_id, pos, time, n1=0, n2=1):
     add_check(val)
     serial_write(val)
     rev = serial_read(1)
-    if (len(rev) == 1):
-        return True
-    else:
-        return False
+    return len(rev) == 1
 
 
 def DisableTorque(servo_id):
@@ -154,8 +145,7 @@ def SendData(data0, data1, data2, data3, data4, data5):
     serial_write(val)
 
 def ReadData():
-    rev = serial_read(10)
-    if rev:
+    if rev := serial_read(10):
         for i in rev:
             print(hex(rev), end=" ")
         print(" ")

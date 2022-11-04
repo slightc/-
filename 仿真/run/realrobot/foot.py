@@ -30,9 +30,7 @@ def SetFoot(x,yl,yr,zl,zr):
     use_time = (time.time()-timestart)
     delay_time = 0.04 - use_time
 
-    if delay_time < 0.001:
-        delay_time = 0.001
-
+    delay_time = max(delay_time, 0.001)
     time.sleep(delay_time)
 
 # dir = -1

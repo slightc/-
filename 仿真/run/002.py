@@ -54,10 +54,7 @@ def ReadForceSensor(handle, mode=1):
 
 
 def ReadFsrGroup(FsrGroup, mode=1):
-    data = []
-    for i in FsrGroup:
-        data.append(ReadForceSensor(i, mode))
-    return data
+    return [ReadForceSensor(i, mode) for i in FsrGroup]
 
 
 Connect()
@@ -172,7 +169,7 @@ Position2 = [0, 0, 0]
 
 def get_fsr_zmp(FsrGroup):
     a = ReadFsrGroup(FsrGroup, 3)
-    return (sum(a[4:8]) - sum(a[0:4]))*0.0506/10.0+0.002733
+    return (sum(a[4:8]) - sum(a[:4])) * 0.0506 / 10.0 + 0.002733
 
 
 for i in range(150):
@@ -198,8 +195,7 @@ for i in range(180):
 
     if x > 0:
         u = -0.00000001
-    if x > 0.05:
-        x = 0.05
+    x = min(x, 0.05)
     d1 = 0.02*i/180.0
     d2 = 0.01*(180-i)*i/75.0/75.0
     # print(x, v, a)
@@ -219,8 +215,7 @@ for i in range(180):
     print(x - 2600 * a)
     if x < 0:
         u = 0.00000001
-    if x < -0.05:
-        x = -0.05
+    x = max(x, -0.05)
     d1 = 0.04*i/180.0
     d2 = 0.01*(180-i)*i/75.0/75.0
     # print(x, v, a)
